@@ -1,0 +1,56 @@
+name: Node.js CI Pipeline
+
+# Trigger this pipeline on every push or pull request to the main/master branch
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Download the code from your GitHub repository onto the cloud server
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # 2. Set up the specific Node.js version your project needs
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: "npm" # Caches npm packages for lightning-fast future builds
+
+      # 3. Install your project's npm dependencies
+      - name: Install Dependencies
+        run: npm ci
+
+      # 4. Generate Prisma Client (Crucial since your logs show you use Prisma 7)
+      - name: Generate Prisma Client
+        run: npx prisma generate
+        env:
+          DATABASE_URL: "postgresql://mock_user:mock_pass@localhost:5432/mock_db" # Fake string just to pass the build step
+
+      # === NEW: Automated Code Style Gates ===
+      - name: Check Code Formatting (Prettier)
+        run: npm run format:check
+
+      - name: Code Quality Scan (ESLint)
+        run: npm run lint
+
+      # 5. Run your automated test suite with valid mock environment setups
+      - name: Execute Automated Tests
+        run: npm run test
+        env:
+          NODE_ENV: test
+          ALLOWED_ORIGINS: "http://localhost:3000"
+          # Provide mock configurations to pass your Zod validation rules safely:
+          DATABASE_URL: "postgresql://mock_user:mock_pass@localhost:5432/mock_db"
+          JWT_ACCESS_SECRET: "super_secret_mock_access_token_signing_key_12345"
+          JWT_REFRESH_SECRET: "super_secret_mock_refresh_token_signing_key_12345"
+          EMAIL_USER: "test-system@example.com"
+          EMAIL_PASS: "mockpassword123"
+          EMAIL_FROM: "no-reply@example.com"
+          FRONTEND_URL: "http://localhost:3000"
