@@ -38,3 +38,13 @@ export const resetPasswordSchema = z.object({
 export const resendEmailVerificationSchema = z.object({
   email: z.email(),
 });
+
+export const tokenQuerySchema = z.object({
+  token: z
+    .string("Token is required")
+    .trim()
+    // Exactly 64 characters long (32 bytes in hex = 64 characters)
+    .length(64, "Token must be exactly 64 characters long")
+    // Ensures the string only contains valid hexadecimal characters (0-9, a-f)
+    .regex(/^[a-f0-9]+$/i, "Invalid token format"),
+});

@@ -6,4 +6,9 @@ import { profileUpdateSchema } from "./user.validation.js";
 
 export const userRoutes = express.Router();
 
-userRoutes.patch("/profile", validate(profileUpdateSchema), protect, updateProfileController);
+userRoutes.patch(
+  "/profile",
+  validate("body", profileUpdateSchema),
+  protect,
+  updateProfileController,
+);
