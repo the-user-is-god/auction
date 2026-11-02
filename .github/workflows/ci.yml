@@ -50,7 +50,6 @@ jobs:
           DATABASE_URL: "postgresql://mock_user:mock_pass@localhost:5432/mock_db"
           JWT_ACCESS_SECRET: "super_secret_mock_access_token_signing_key_12345"
           JWT_REFRESH_SECRET: "super_secret_mock_refresh_token_signing_key_12345"
-          EMAIL_USER: "test-system@example.com"
-          EMAIL_PASS: "mockpassword123"
           EMAIL_FROM: "no-reply@example.com"
           FRONTEND_URL: "http://localhost:3000"
+          RESEND_API_KEY: "mock_resend_api_key_1234567890"
