@@ -18,6 +18,28 @@ enum Role {
   MODERATOR
 }
 
+enum AuctionStatus {
+  DRAFT
+  SCHEDULED  
+  ACTIVE
+  SUSPENDED
+  UNSOLD
+  PENDING_PAYMENT
+  COMPLETED
+  CANCELLED
+  DISPUTED
+  REFUNDED
+}
+
+enum AuctionCategory {
+  ELECTRONICS
+  ART
+  VEHICLES
+  COLLECTIBLES
+  OTHER
+}
+
+
 model User {
   id    String     @id @default(uuid())
   email String  @unique
@@ -53,4 +75,45 @@ model Session {
 
   expires DateTime
   createdAt DateTime @default(now())
+}
+
+model Auction {
+   id          String          @id @default(uuid())
+  title       String
+  description String
+  category    AuctionCategory
+  images      String[]
+
+  isFeatured  Boolean         @default(false)
+  status      AuctionStatus   @default(DRAFT)
+
+  startingPrice Int
+  bidStep       Int    @default(100)
+  reservePrice  Int?           // hidden minimum; if highest bid < this → UNSOLD
+  currentBid    Int?           // null = no bids yet
+  bidCount      Int    @default(0)
+
+
+  // Timeline
+  startTime DateTime
+  endTime   DateTime 
+
+
+  // Sniper protection: if a bid lands within `extensionWindowSecs`
+  // of endTime, push endTime out by `extensionSecs`
+  extensionWindowSecs Int @default(0)
+  extensionSecs       Int @default(0)
+
+  ownerId  String
+  winnerId String?
+
+  version   Int       @default(0)   // increment on every bid (optimistic locking)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([status, endTime])
+  @@index([category, status])
+  @@index([ownerId])
+  @@index([isFeatured, status])
 }
