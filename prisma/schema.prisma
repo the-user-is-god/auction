@@ -22,6 +22,7 @@ enum AuctionStatus {
   DRAFT
   SCHEDULED  
   ACTIVE
+  ENDED
   SUSPENDED
   UNSOLD
   PENDING_PAYMENT
@@ -58,6 +59,8 @@ model User {
   emailVerificationExpires DateTime?
   
   sessions Session[]
+
+  bids Bid[]
 }
 
 model Session {
@@ -112,8 +115,26 @@ model Auction {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
+  bids Bid[]
+
   @@index([status, endTime])
   @@index([category, status])
   @@index([ownerId])
   @@index([isFeatured, status])
+  
+}
+
+model Bid {
+  id        String   @id @default(uuid())
+  auctionId String
+  bidderId  String
+  amount    Int
+  createdAt DateTime @default(now())
+
+
+  bidder User @relation(fields: [bidderId], references: [id],onDelete: Cascade)
+  auction Auction @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+
+  @@index([auctionId, amount])
+  @@index([bidderId])
 }
