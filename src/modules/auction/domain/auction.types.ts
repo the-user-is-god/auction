@@ -12,7 +12,7 @@ export type AUCTION_STATUS =
   | "REFUNDED";
 export type AUCTION_CATEGORY = "ELECTRONICS" | "ART" | "VEHICLES" | "COLLECTIBLES" | "OTHER";
 
-export interface NewAuctionInput {
+export interface CreateAuctionInput {
   title: string;
   description: string;
   category: AUCTION_CATEGORY;
