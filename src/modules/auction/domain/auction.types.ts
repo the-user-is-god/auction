@@ -17,6 +17,8 @@ export interface CreateAuctionInput {
   description: string;
   category: AUCTION_CATEGORY;
   images: string[];
+  isFeatured?: boolean;
+  status: AUCTION_STATUS;
   ownerId: string;
   startingPrice: number;
   bidStep?: number;
